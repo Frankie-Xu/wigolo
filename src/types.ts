@@ -1076,6 +1076,10 @@ export interface CacheInput {
   mode?: 'fts' | 'hybrid';
   limit?: number;
   max_tokens_out?: number;
+  /** Restrict results to web fetches or locally indexed documents. */
+  source?: 'web' | 'internal';
+  /** Exact namespace filter (e.g. "docs", "wiki"). */
+  namespace?: string;
 }
 
 export interface CacheResultItem {
@@ -1106,6 +1110,39 @@ export interface ChangeReport {
   previous_hash?: string;
   current_hash?: string;
   diff_summary?: string;
+  error?: string;
+}
+
+// --- Index tool types ---
+
+export interface IndexInput {
+  /** Local filesystem path (file or directory). Remote URLs are rejected. */
+  source: string;
+  /** File glob; default `*.md`. */
+  glob?: string;
+  /** Namespace prefix for `internal://{namespace}/…` URLs (default `docs`). */
+  namespace?: string;
+  /** Recurse into subdirectories (default true). */
+  recursive?: boolean;
+  /** TTL in seconds; 0/omit = never expire. */
+  ttl?: number;
+  /** Categorization tags (e.g. `team:backend`). */
+  tags?: string[];
+}
+
+export interface IndexFileResult {
+  path: string;
+  url: string;
+  status: 'indexed' | 'skipped' | 'failed';
+  error?: string;
+}
+
+export interface IndexOutput {
+  indexed: number;
+  skipped: number;
+  failed: number;
+  namespace: string;
+  files: IndexFileResult[];
   error?: string;
 }
 
