@@ -294,7 +294,13 @@ export interface ExtractionResult {
   site_data_blocked?: string;
 }
 
-export type ExtractorType = 'defuddle' | 'readability' | 'turndown' | 'site-specific';
+export type ExtractorType =
+  | 'defuddle'
+  | 'readability'
+  | 'turndown'
+  | 'site-specific'
+  | 'index:markdown'
+  | 'index:pdf';
 
 export type BrowserType = 'chromium' | 'firefox' | 'webkit';
 
@@ -317,11 +323,18 @@ export interface CachedContent {
   metadata: string;
   links: string;
   images: string;
-  fetchMethod: 'http' | 'browser';
+  fetchMethod: 'http' | 'browser' | 'index';
   extractorUsed: ExtractorType;
   contentHash: string;
   fetchedAt: string;
   expiresAt: string | null;
+  /**
+   * Document namespace. `'web'` for HTTP fetches; locally indexed documents
+   * use the caller-supplied namespace (e.g. `docs`, `wiki`).
+   */
+  namespace?: string;
+  /** Tags persisted as a JSON array on the row (e.g. `team:backend`). */
+  tags?: string[];
   /**
    * Upstream HTTP status code captured at fetch time. `null` on rows
    * persisted before the column existed; treated as "unknown" by callers.

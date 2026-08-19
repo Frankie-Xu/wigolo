@@ -179,6 +179,18 @@ interface DbRow {
   content_completeness_level?: string | null;
   content_completeness_reason?: string | null;
   content_completeness_settled_by?: string | null;
+  namespace?: string | null;
+  tags?: string | null;
+}
+
+function parseTagsColumn(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((t): t is string => typeof t === 'string') : [];
+  } catch {
+    return [];
+  }
 }
 
 function rowToCachedContent(row: DbRow): CachedContent {
@@ -209,6 +221,8 @@ function rowToCachedContent(row: DbRow): CachedContent {
     fetchedAt: row.fetched_at,
     expiresAt: row.expires_at,
     httpStatus: row.http_status ?? null,
+    namespace: row.namespace ?? 'web',
+    tags: parseTagsColumn(row.tags),
     ...(contentCompleteness ? { contentCompleteness } : {}),
   };
 }
