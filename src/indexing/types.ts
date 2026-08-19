@@ -10,6 +10,8 @@ export interface ScanResult {
   files: ScannedFile[];
   /** Soft warnings (skipped secrets, oversized files, cap hit). */
   warnings: string[];
+  /** True when scanning stopped because `maxFiles` was reached. */
+  capReached?: boolean;
 }
 
 /** Parsed local file content before cache write. */
@@ -43,6 +45,10 @@ export interface IngestBatchResult {
   skipped: number;
   failed: number;
   files: IndexFileResult[];
+  embed?: {
+    enqueued: number;
+    skipped_embed: number;
+  };
 }
 
 export interface IndexedDocumentWrite {

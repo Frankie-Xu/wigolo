@@ -100,6 +100,7 @@ export function scanLocalFiles(
   const maxFiles = options.maxFiles ?? MAX_INDEX_FILES;
   const warnings: string[] = [];
   const files: ScannedFile[] = [];
+  let capReached = false;
 
   const rootStat = statSync(root);
   if (rootStat.isFile()) {
@@ -133,6 +134,7 @@ export function scanLocalFiles(
 
     for (const entry of entries) {
       if (files.length >= maxFiles) {
+        capReached = true;
         warnings.push(`file cap reached (${maxFiles}); remaining paths skipped`);
         return;
       }
@@ -211,6 +213,6 @@ export function scanLocalFiles(
   };
 
   visit(root);
-  log.debug('scan complete', { root, count: files.length, warnings: warnings.length });
-  return { root, files, warnings };
+  log.debug('scan complete', { root, count: files.length, warnings: warnings.length, capReached });
+  return { root, files, warnings, ...(capReached ? { capReached: true } : {}) };
 }

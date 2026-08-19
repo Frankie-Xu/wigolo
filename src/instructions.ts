@@ -344,8 +344,12 @@ Key parameters:
 - recursive: walk subdirectories (default true).
 - ttl: seconds; 0/omit = never expire.
 - tags: categorization strings (e.g. team:backend).
+- dry_run: scan only, no DB writes.
+- max_files: batch cap (default 10000).
+- wait_for_embed: block until embeddings finish.
+- watch: fs.watch auto re-index (blocks until SIGINT).
 
-Returns indexed/skipped/failed counts plus per-file status. Unchanged files (same content hash) are skipped. Query with \`cache({ query, source: "internal" })\` or \`cache({ namespace: "docs" })\`. Does not feed research/agent corpora in this phase.`,
+Returns indexed/skipped/failed counts plus per-file status. Unchanged files (same content hash) are skipped. Query with \`cache({ query, source: "internal" })\` or \`fetch({ url: "internal://docs/…" })\`.`,
 } as const;
 
 export type ToolName = keyof typeof TOOL_DESCRIPTIONS;

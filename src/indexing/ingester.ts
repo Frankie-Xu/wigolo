@@ -102,5 +102,14 @@ export async function ingestFiles(
     else failed++;
   }
 
-  return { indexed, skipped, failed, files: results };
+  return {
+    indexed,
+    skipped,
+    failed,
+    files: results,
+    embed: {
+      enqueued: indexed,
+      skipped_embed: skipped,
+    },
+  };
 }

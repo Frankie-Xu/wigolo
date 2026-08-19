@@ -1094,6 +1094,12 @@ export interface CacheStats {
   total_size_mb: number;
   oldest: string;
   newest: string;
+  /** Rows whose URL is `internal://…` (locally indexed). */
+  internal_urls?: number;
+  /** Rows whose URL is not `internal://…`. */
+  web_urls?: number;
+  /** Entry counts grouped by `namespace` column. */
+  by_namespace?: Record<string, number>;
 }
 
 export interface CacheOutput {
@@ -1128,6 +1134,14 @@ export interface IndexInput {
   ttl?: number;
   /** Categorization tags (e.g. `team:backend`). */
   tags?: string[];
+  /** Scan and report only; do not write to cache. */
+  dry_run?: boolean;
+  /** Max files per batch (default 10_000). */
+  max_files?: number;
+  /** Block until background embedding queue drains. */
+  wait_for_embed?: boolean;
+  /** Watch source for changes and re-index (blocks until stopped). */
+  watch?: boolean;
 }
 
 export interface IndexFileResult {
@@ -1138,11 +1152,23 @@ export interface IndexFileResult {
 }
 
 export interface IndexOutput {
+  /** Files matched by the scanner. */
+  scanned?: number;
   indexed: number;
   skipped: number;
   failed: number;
   namespace: string;
   files: IndexFileResult[];
+  /** Failure details (capped at 20). */
+  errors?: Array<{ path: string; reason: string }>;
+  /** Preview URLs from the scan (up to 5). */
+  sample_urls?: string[];
+  /** True when fs.watch is active (process must stay alive). */
+  watching?: boolean;
+  embed?: {
+    enqueued: number;
+    skipped_embed: number;
+  };
   error?: string;
 }
 

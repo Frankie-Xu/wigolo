@@ -612,6 +612,22 @@ export const INDEX_TOOL_SCHEMA = {
       items: { type: 'string' },
       description: 'Categorization tags such as team:backend.',
     },
+    dry_run: {
+      type: 'boolean',
+      description: 'Scan and report only; do not write to cache.',
+    },
+    max_files: {
+      type: 'number',
+      description: 'Maximum files per batch (default 10000).',
+    },
+    wait_for_embed: {
+      type: 'boolean',
+      description: 'Block until background embedding completes.',
+    },
+    watch: {
+      type: 'boolean',
+      description: 'Watch for file changes and auto re-index (blocks until stopped).',
+    },
   },
   required: ['source'],
 };

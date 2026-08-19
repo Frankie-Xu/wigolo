@@ -95,8 +95,9 @@ const RESPONSE_FIELDS: Record<ToolName, Record<string, string>> = {
     job: 'object', jobs: 'array', changes_since_last: 'array', notice: 'string',
   },
   index: {
-    indexed: 'number', skipped: 'number', failed: 'number', namespace: 'string',
-    files: 'array', error: 'string',
+    scanned: 'number', indexed: 'number', skipped: 'number', failed: 'number',
+    namespace: 'string', files: 'array', sample_urls: 'array', watching: 'boolean',
+    embed: 'object', errors: 'array', error: 'string',
   },
 };
 

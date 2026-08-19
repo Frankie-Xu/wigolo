@@ -650,15 +650,38 @@ export function getCacheStats(): CacheStats {
       COUNT(*) as total_urls,
       COALESCE(SUM(LENGTH(markdown) + LENGTH(COALESCE(raw_html, ''))), 0) as total_bytes,
       MIN(fetched_at) as oldest,
-      MAX(fetched_at) as newest
+      MAX(fetched_at) as newest,
+      SUM(CASE WHEN normalized_url GLOB 'internal://*' THEN 1 ELSE 0 END) as internal_urls,
+      SUM(CASE WHEN normalized_url NOT GLOB 'internal://*' THEN 1 ELSE 0 END) as web_urls
     FROM url_cache
-  `).get() as { total_urls: number; total_bytes: number; oldest: string | null; newest: string | null };
+  `).get() as {
+    total_urls: number;
+    total_bytes: number;
+    oldest: string | null;
+    newest: string | null;
+    internal_urls: number;
+    web_urls: number;
+  };
+
+  const nsRows = db.prepare(`
+    SELECT LOWER(COALESCE(namespace, 'web')) AS ns, COUNT(*) AS n
+    FROM url_cache
+    GROUP BY LOWER(COALESCE(namespace, 'web'))
+  `).all() as Array<{ ns: string; n: number }>;
+
+  const by_namespace: Record<string, number> = {};
+  for (const nsRow of nsRows) {
+    by_namespace[nsRow.ns] = nsRow.n;
+  }
 
   return {
     total_urls: row.total_urls,
     total_size_mb: Math.round((row.total_bytes / (1024 * 1024)) * 1e6) / 1e6,
     oldest: row.oldest ?? '',
     newest: row.newest ?? '',
+    internal_urls: row.internal_urls,
+    web_urls: row.web_urls,
+    by_namespace,
   };
 }
 
