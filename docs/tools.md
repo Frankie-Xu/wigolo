@@ -1,6 +1,6 @@
 # Tools
 
-wigolo exposes ten tools. They're the same tools everywhere — MCP (stdio or HTTP), [REST](./rest-api.md), [SDKs](./sdks.md), and the [one-shot CLI](./cli.md) — with identical parameter names on the wire.
+wigolo exposes eleven tools. They're the same tools everywhere — MCP (stdio or HTTP), [REST](./rest-api.md), [SDKs](./sdks.md), and the [one-shot CLI](./cli.md) — with identical parameter names on the wire.
 
 **Cache first.** Every fetched, crawled, or searched page lands in the local knowledge cache. The `cache` tool answers from disk instantly and free — check it before going to the network, and expect repeat questions in a session to get cheaper as the cache warms.
 
@@ -100,13 +100,19 @@ Query the persistent local knowledge cache — every page wigolo has already see
 | `mode` | enum | `fts` (default, keyword BM25) or `hybrid` (adds semantic vector search, fused by reciprocal-rank fusion). |
 | `url_pattern` | string | Glob filter, e.g. `"*example.com*"`. |
 | `since` | string | ISO date floor. |
-| `stats` | boolean | Totals: URL count, size, date range. |
+| `stats` | boolean | Totals: URL count, size, date range, plus `internal_urls` / `web_urls` / `by_namespace`. |
 | `clear` | boolean | Delete matching entries (requires at least one filter). |
-| `check_changes` | boolean | Re-fetch matching URLs and report changed/unchanged with diff summaries. |
+| `check_changes` | boolean | Re-fetch matching URLs and report changed/unchanged with diff summaries. Internal `internal://` rows are not re-fetched. |
 | `limit` | number | Default 20. |
+| `source` | enum | `web` or `internal` — restrict to HTTP fetches or locally indexed documents. |
+| `namespace` | string | Exact index namespace (e.g. `docs`, `wiki`). |
 
 ```json
 { "query": "connection pool exhaustion", "mode": "hybrid", "limit": 10 }
+```
+
+```json
+{ "query": "architecture", "source": "internal", "namespace": "docs" }
 ```
 
 ## extract
@@ -220,6 +226,27 @@ Register change-watch jobs on one or many URLs. Execution is lazy: jobs are chec
 ```json
 { "action": "create", "url": "https://go.dev/doc/devel/release",
   "interval_seconds": 3600, "notification": "inline" }
+```
+
+## index
+
+Ingest local markdown, text, and PDF files into the knowledge cache as never-expiring `internal://` documents. This is a write path into `url_cache` — query with `cache` (`source: "internal"`) or `fetch` an `internal://` URL. Unchanged files are skipped by content hash.
+
+| Param | Type | Notes |
+| --- | --- | --- |
+| `source` | string | Local file or directory path. Remote URLs are rejected. Required. |
+| `glob` | string | Basename glob (`*.md`, `*.pdf`, `*`). Default `*.md`. |
+| `namespace` | string | Prefix for `internal://{namespace}/…` URLs. Default `docs`. ASCII `[a-z0-9_-]+`. |
+| `recursive` | boolean | Walk subdirectories. Default true. |
+| `ttl` | number | Seconds; `0` / omit = never expire. |
+| `tags` | string[] | Categorization labels (e.g. `team:backend`). |
+| `dry_run` | boolean | Scan and report only; no cache writes. |
+| `max_files` | number | Batch cap. Default 10000. |
+| `wait_for_embed` | boolean | Block until background embeddings finish. |
+| `watch` | boolean | CLI-only: `fs.watch` and re-index until SIGINT. Rejected over MCP and REST. |
+
+```json
+{ "source": "./docs", "namespace": "docs", "glob": "*.md" }
 ```
 
 [← Docs index](./README.md) · [Next: CLI](./cli.md)

@@ -32,8 +32,6 @@ function isAllowedExtension(name: string, glob: string): boolean {
   if (!matchSimpleGlob(name, glob)) return false;
   const ext = extname(name).toLowerCase();
   if (!ext) return false;
-  if (glob === '*') return DEFAULT_ALLOWED_EXTENSIONS.has(ext);
-  if (glob.startsWith('*.')) return true;
   return DEFAULT_ALLOWED_EXTENSIONS.has(ext);
 }
 

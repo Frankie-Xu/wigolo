@@ -165,9 +165,10 @@ const TOOL_USAGE: Record<ToolCommand, { usage: string; blurb: string }> = {
   index: {
     usage: 'wigolo index <path> [flags]',
     blurb:
-      'Ingest local markdown/text files into the knowledge cache as internal:// documents.\n' +
+      'Ingest local markdown/text/PDF files into the knowledge cache as internal:// documents.\n' +
       '  --namespace=docs           URL namespace (default docs)\n' +
-      '  --glob=*.md                Basename glob (default *.md)',
+      '  --glob=*.md                Basename glob (default *.md)\n' +
+      '  --watch                    CLI-only: re-index on file changes until SIGINT',
   },
 };
 

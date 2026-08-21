@@ -147,8 +147,8 @@ describe('sanitizeCapabilityText', () => {
 });
 
 describe('isToolCommand', () => {
-  it('accepts the ten tools and the find_similar alias', () => {
-    for (const t of ['search', 'fetch', 'crawl', 'extract', 'cache', 'find-similar', 'find_similar', 'research', 'agent', 'diff', 'watch']) {
+  it('accepts the eleven tools and the find_similar alias', () => {
+    for (const t of ['search', 'fetch', 'crawl', 'extract', 'cache', 'find-similar', 'find_similar', 'research', 'agent', 'diff', 'watch', 'index']) {
       expect(isToolCommand(t)).toBe(true);
     }
   });

@@ -149,7 +149,9 @@ export function initDatabase(dbPath: string): Database.Database {
       fetched_at TEXT NOT NULL,
       expires_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      namespace TEXT NOT NULL DEFAULT 'web',
+      tags TEXT NOT NULL DEFAULT '[]'
     );
 
     CREATE UNIQUE INDEX IF NOT EXISTS idx_url_cache_normalized ON url_cache(normalized_url);
