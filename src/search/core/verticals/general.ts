@@ -4,6 +4,7 @@ import { WikipediaEngine } from '../../engines/wikipedia.js';
 import { BraveEngine } from '../../engines/brave.js';
 import { MojeekEngine } from '../../engines/mojeek.js';
 import { MarginaliaEngine } from '../../engines/marginalia.js';
+import { ZhipuEngine } from '../../engines/zhipu.js';
 import {
   wrapWithRetryAndBreaker,
   registerEngineMinInterval,
@@ -48,6 +49,29 @@ export function getGeneralEngines(): EngineEntry[] {
     // Wiby was removed here: it errored / opened its circuit breaker on every
     // run — a pure latency tax that contributed no results. Its long-tail role
     // is covered by Mojeek + Marginalia, which respond.
+    // Zhipu (Pro/Sogou/Quark) adds Chinese web coverage behind one API key.
+    // Always registered: missing WIGOLO_ZHIPU_API_KEY surfaces needs_key in
+    // engine_warnings without failing the fused search response.
+    {
+      engine: wrapWithRetryAndBreaker(new ZhipuEngine('zhipu-pro', 'search_pro')),
+      weight: 1.1,
+      supportsDateFilter: true,
+      quality: 'medium',
+    },
+    {
+      engine: wrapWithRetryAndBreaker(new ZhipuEngine('zhipu-sogou', 'search_pro_sogou')),
+      weight: 0.9,
+      supportsDateFilter: true,
+      secondary: true,
+      quality: 'medium',
+    },
+    {
+      engine: wrapWithRetryAndBreaker(new ZhipuEngine('zhipu-quark', 'search_pro_quark')),
+      weight: 0.8,
+      supportsDateFilter: true,
+      secondary: true,
+      quality: 'low',
+    },
   ];
 
   if (getConfig().braveApiKey) {

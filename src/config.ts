@@ -120,6 +120,10 @@ export interface Config {
    * 401 path for org-private result hydration, and is the env var named
    * in engine_warnings hints. Optional — the adapter still runs unauthed. */
   githubToken: string | null;
+  /** Zhipu (智谱) Web Search API key. Powers zhipu-pro / zhipu-sogou /
+   * zhipu-quark in the general vertical. Optional — adapters throw a
+   * needs_key-shaped error when unset so the overall search still succeeds. */
+  zhipuApiKey: string | null;
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   logFormat: 'json' | 'text';
   reranker: 'onnx' | 'none' | 'custom';
@@ -667,6 +671,7 @@ export function getConfig(): Config {
     respectRobotsTxt: envBool('RESPECT_ROBOTS_TXT', true, settings, 'respectRobotsTxt'),
     braveApiKey: envStr('BRAVE_API_KEY', null, settings, 'braveApiKey'),
     githubToken: envStr('WIGOLO_GITHUB_TOKEN', null, settings, 'githubToken'),
+    zhipuApiKey: envStr('WIGOLO_ZHIPU_API_KEY', null, settings, 'zhipuApiKey'),
     logLevel: (envStr('LOG_LEVEL', 'info', settings, 'logLevel') as Config['logLevel']),
     logFormat: (envStr('LOG_FORMAT', 'json', settings, 'logFormat') as Config['logFormat']),
     reranker: (() => {

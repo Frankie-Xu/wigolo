@@ -92,4 +92,17 @@ describe('buildEngineWarnings (M2)', () => {
     // Unknown engines don't get fabricated hints — only the registry does.
     expect(warnings[0].hint).toBeUndefined();
   });
+
+  it('classifies zhipu missing-key failures as needs_key with WIGOLO_ZHIPU_API_KEY hint', () => {
+    const warnings = buildEngineWarnings([
+      tel(
+        'zhipu-pro',
+        'error',
+        'WIGOLO_ZHIPU_API_KEY not set — set the env var to enable Zhipu web search',
+      ),
+    ]);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].code).toBe('needs_key');
+    expect(warnings[0].hint).toMatch(/WIGOLO_ZHIPU_API_KEY/);
+  });
 });

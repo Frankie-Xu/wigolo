@@ -79,6 +79,11 @@ const ENGINE_QUALITY: Record<string, EngineQualityTier> = {
   // (DDG image is the zero-key floor, Brave image is a key-gated peer).
   'ddg-image': 'medium',
   'brave-image': 'medium',
+  // Zhipu Web Search: structured JSON with title/content/link from Chinese
+  // indices. Pro is primary; Sogou/Quark are secondary long-tail signals.
+  'zhipu-pro': 'medium',
+  'zhipu-sogou': 'medium',
+  'zhipu-quark': 'low',
 };
 
 /**

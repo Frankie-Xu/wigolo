@@ -41,6 +41,9 @@ const ENGINE_AUTH_HINTS: Record<string, string> = {
   // detect below and convert to a `needs_key` warning code.
   'brave-image': 'set BRAVE_API_KEY to enable Brave image search',
   brave: 'set BRAVE_API_KEY to enable the Brave web engine',
+  'zhipu-pro': 'set WIGOLO_ZHIPU_API_KEY to enable Zhipu web search',
+  'zhipu-sogou': 'set WIGOLO_ZHIPU_API_KEY to enable Zhipu web search',
+  'zhipu-quark': 'set WIGOLO_ZHIPU_API_KEY to enable Zhipu web search',
 };
 
 /**
