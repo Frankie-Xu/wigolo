@@ -6,7 +6,6 @@ import {
   matchSimpleGlob,
   resolveLocalSource,
   scanLocalFiles,
-  MAX_INDEX_FILES,
 } from '../../../src/indexing/scanner.js';
 
 describe('matchSimpleGlob', () => {
@@ -108,7 +107,28 @@ describe('scanLocalFiles', () => {
     expect(scan.files.map((f) => f.relativePath)).toEqual(['top.md']);
   });
 
-  it('exports a finite file cap constant', () => {
-    expect(MAX_INDEX_FILES).toBeGreaterThan(0);
+  it('stops at maxFiles and sets capReached', () => {
+    writeFileSync(join(dir, 'a.md'), '# A');
+    writeFileSync(join(dir, 'b.md'), '# B');
+    const scan = scanLocalFiles(dir, { glob: '*.md', maxFiles: 1 });
+    expect(scan.files).toHaveLength(1);
+    expect(scan.capReached).toBe(true);
+    expect(scan.warnings.some((w) => /cap/i.test(w))).toBe(true);
+  });
+
+  it('includes PDFs when glob is * or *.pdf', () => {
+    writeFileSync(join(dir, 'notes.md'), '# md');
+    writeFileSync(join(dir, 'paper.pdf'), '%PDF-1.4');
+    writeFileSync(join(dir, 'skip.bin'), 'xx');
+    const all = scanLocalFiles(dir, { glob: '*', recursive: false });
+    expect(all.files.map((f) => f.relativePath).sort()).toEqual(['notes.md', 'paper.pdf']);
+    const pdfs = scanLocalFiles(dir, { glob: '*.pdf', recursive: false });
+    expect(pdfs.files.map((f) => f.relativePath)).toEqual(['paper.pdf']);
+  });
+
+  it('does not ingest disallowed extensions even when the glob matches', () => {
+    writeFileSync(join(dir, 'payload.exe'), 'MZ');
+    const scan = scanLocalFiles(dir, { glob: '*.exe', recursive: false });
+    expect(scan.files).toEqual([]);
   });
 });

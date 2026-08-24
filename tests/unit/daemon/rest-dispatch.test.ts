@@ -74,6 +74,16 @@ describe('dispatchTool — fetch', () => {
     expect(handleFetch).not.toHaveBeenCalled();
   });
 
+  it('fetch allows internal:// documents through to the handler', async () => {
+    vi.mocked(handleFetch).mockResolvedValue({
+      ok: true,
+      data: { url: 'internal://docs/guide.md', markdown: 'hi', fetch_method: 'cache' },
+    } as never);
+    const r = await dispatchTool('fetch', { url: 'internal://docs/guide.md' }, fakeCtx());
+    expect(r.status).toBe(200);
+    expect(handleFetch).toHaveBeenCalled();
+  });
+
   it('schedules the overdue watch check on a non-watch call', async () => {
     vi.mocked(handleFetch).mockResolvedValue({ ok: true, data: {} } as never);
     await dispatchTool('fetch', { url: 'https://x.com' }, fakeCtx());

@@ -109,14 +109,18 @@ function crawlCacheFailure(errorKey: string): DispatchResult {
 }
 
 async function dispatchFetch(input: FetchInput, ctx: DispatchContext): Promise<DispatchResult> {
-  const guard = guardServeTarget(String((input as { url?: unknown }).url ?? ''), {
-    bindIsLoopback: ctx.bindIsLoopback,
-  });
-  if (!guard.ok) {
-    return { status: 400, body: errorEnvelope(guard.code, guard.reason, { stage: 'validate', hint: guard.hint }) };
+  const raw = String((input as { url?: unknown }).url ?? '');
+  // Locally indexed documents are cache-only — skip HTTP SSRF on this route.
+  if (!raw.startsWith('internal://')) {
+    const guard = guardServeTarget(raw, {
+      bindIsLoopback: ctx.bindIsLoopback,
+    });
+    if (!guard.ok) {
+      return { status: 400, body: errorEnvelope(guard.code, guard.reason, { stage: 'validate', hint: guard.hint }) };
+    }
+    const resolvedFail = await resolvedGuardFailure(guard.url, ctx);
+    if (resolvedFail) return resolvedFail;
   }
-  const resolvedFail = await resolvedGuardFailure(guard.url, ctx);
-  if (resolvedFail) return resolvedFail;
   const r = await handleFetch(input, ctx.subsystems.router);
   if (!r.ok) return stageFailure(r);
   return { status: 200, body: r.data };

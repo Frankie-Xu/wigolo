@@ -593,7 +593,7 @@ export const INDEX_TOOL_SCHEMA = {
     },
     glob: {
       type: 'string',
-      description: 'Basename glob such as *.md or *.txt (default *.md).',
+      description: 'Basename glob such as *.md, *.txt, or *.pdf (default *.md).',
     },
     namespace: {
       type: 'string',

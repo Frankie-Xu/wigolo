@@ -347,7 +347,7 @@ Key parameters:
 - dry_run: scan only, no DB writes.
 - max_files: batch cap (default 10000).
 - wait_for_embed: block until embeddings finish.
-- watch: fs.watch auto re-index (blocks until SIGINT).
+- watch: CLI-only fs.watch re-index (blocks until SIGINT). Rejected over MCP and REST.
 
 Returns indexed/skipped/failed counts plus per-file status. Unchanged files (same content hash) are skipped. Query with \`cache({ query, source: "internal" })\` or \`fetch({ url: "internal://docs/…" })\`.`,
 } as const;

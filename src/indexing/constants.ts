@@ -30,4 +30,4 @@ export const SKIP_EXTENSIONS = new Set([
   '.der',
 ]);
 
-export const DEFAULT_ALLOWED_EXTENSIONS = new Set(['.md', '.txt', '.markdown']);
+export const DEFAULT_ALLOWED_EXTENSIONS = new Set(['.md', '.txt', '.markdown', '.pdf']);
